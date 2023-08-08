@@ -1,0 +1,59 @@
+# I learned how to model a 3D orbit from this video: https://www.youtube.com/watch?v=zBoygu6COVw
+# I have modified the code to model the Moon orbitting around the Earth
+
+from vpython import *
+ 
+# Astronomical Data
+G = 6.67e-11
+Me = 5.97219e24 # Mass of the Earth in kg
+Mm = 7.348e22 # Mass of the Moon in kg
+Re = 6.378e6 # Radius of the Earth in m
+Rm = 1.737e6 # Radius of the Moon in m
+dem = 384.4e6 # Distance between the Earth and the Moon in m
+
+
+T = 27.321 * 24 * 3600 # (sidereal period in seconds)
+
+# Initial Velocity
+v0 = 2 * pi * dem / T # Kepler's law
+
+# Bodies in Space
+earth = sphere(pos = vector(0, 0,0), radius = Re, texture = textures.earth)
+moon = sphere(pos = vector(dem, 0, 0), radius = Rm, make_trail = True)
+
+# Initializing momentum
+moon.p = Mm * vector(0, v0, 0)
+earth.p = Me * vector(0, 0, 0)
+
+# Initializing time
+t = 0
+dt = 100 # time step
+
+# Preparing the graph
+g1 = graph(title = "Momentum in Earth-Moon Orbit System",xtitle="time (s)",ytitle="momentum (kg•m/s)", width=400, height=200, background = color.white)
+fm = gcurve(color = color.blue, label = "Moon")
+fe = gcurve(color = color.red, label = "Earth")
+ft = gcurve(color = color.purple, label = "Total")
+
+# Orbit
+while t < T:
+    rate(5000)
+    
+    r = moon.pos - earth.pos
+    F = -G * Me * Mm * norm(r) / mag(r)**2 # Newton's law of gravitation
+    
+    # Updating momentum
+    moon.p = moon.p + F * dt
+    earth.p = earth.p - F * dt
+    
+    # Updating position
+    moon.pos = moon.pos + moon.p * dt / Mm
+    earth.pos = earth.pos + earth.p * dt / Me
+    
+    t = t + dt 
+    
+    # Updating momentum plot
+    fm.plot(t, moon.p.x)
+    fe.plot(t, earth.p.x)
+    ft.plot(t, earth.p.x + moon.p.x)
+    

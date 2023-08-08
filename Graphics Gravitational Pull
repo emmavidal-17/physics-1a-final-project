@@ -1,0 +1,69 @@
+import pygame
+import sys
+
+pygame.init()
+
+# Constants
+WIDTH, HEIGHT = 800, 600
+GROUND_HEIGHT = 50
+BALL_RADIUS = 20
+
+# Colors
+WHITE = (205, 240, 255)
+GREEN = (124,252,0)
+RED = (255, 0, 0)
+BLACK = (0, 0, 0)
+
+# Gravitational accelerations on different planets (in m/s^2)
+planet_gravities = {
+    "Earth": 9.81,
+    "Mars": 3.71,
+    "Moon": 1.625,
+    # Add more planets and their accelerations here
+}
+
+# Initialize the display
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Ball Free Fall Visualization")
+
+# Ball initial position and velocity
+ball_x = WIDTH // 2
+ball_y = HEIGHT // 4
+velocity = 0
+
+current_planet = "Mars"  # Starting planet
+
+clock = pygame.time.Clock()
+
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+
+    # Update ball position and velocity based on current planet's gravity
+    ball_y += velocity
+    velocity += planet_gravities[current_planet] * 0.01  # Adjust the multiplier for better visualization
+
+    # Check if the ball hits the ground
+    if ball_y + BALL_RADIUS >= HEIGHT - GROUND_HEIGHT:
+        ball_y = HEIGHT - GROUND_HEIGHT - BALL_RADIUS
+        velocity = 0  # No bounce
+
+    # Clear the screen
+    screen.fill(WHITE)
+
+    # Draw the ground
+    pygame.draw.rect(screen, GREEN, (0, HEIGHT - GROUND_HEIGHT, WIDTH, GROUND_HEIGHT))
+
+    # Draw the ball
+    pygame.draw.circle(screen, RED, (ball_x, int(ball_y)), BALL_RADIUS)
+
+    # Display the current planet on the screen
+    font = pygame.font.Font(None, 30)
+    planet_text = f"Current Planet: {current_planet}"
+    text_surface = font.render(planet_text, True, BLACK)
+    screen.blit(text_surface, (10, 10))
+
+    pygame.display.flip()
+    clock.tick(40)  # Frame rate

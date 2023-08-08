@@ -1,0 +1,40 @@
+import csv
+
+def drop_ball_simulation(height):
+    # Constants
+    g = 3.59  # Acceleration due to gravity (m/s²)
+    u = 0     # Initial velocity (m/s)
+
+    # Initialize variables
+    t = 0     # Initial time (s)
+    s = height # Initial displacement (m)
+
+    # Time step for simulation (adjust as needed for accuracy)
+    time_step = 0.01  # 0.01 seconds
+
+    # Create a list to store simulation data
+    simulation_data = []
+
+    while s >= 0:
+        # Calculate displacement and velocity using kinematic equations
+        s = height - 0.5 * g * t**2
+        v = u + g * t
+
+        # Append the current time, height, and velocity to the simulation data list
+        simulation_data.append([t, s, v])
+
+        # Increment time by the time step
+        t += time_step
+
+    print("The ball has hit the ground.")
+
+    # Save data to a CSV file
+    csv_filename = "ball_drop_simulation_data.csv"
+    with open(csv_filename, 'w', newline='') as csvfile:
+        csv_writer = csv.writer(csvfile)
+        csv_writer.writerow(["Time (s)", "Height (m)", "Velocity (m/s)"])  # Write header
+        csv_writer.writerows(simulation_data)  # Write data rows
+
+# Example usage
+drop_height = 50  # Initial height from which the ball is dropped (meters)
+drop_ball_simulation(drop_height)
